@@ -1,7 +1,6 @@
 import { generateResponse } from "../config/openRouter.js";
 import User from "../models/user.model.js";
 import website from "../models/website.models.js";
-import extractJson from "../utils/extractJson.js";
 
 const masterPrompt = `
 YOU ARE A WORLD-CLASS PRINCIPAL FRONTEND ENGINEER,
@@ -294,26 +293,20 @@ IF ANY CHECK FAILS → RESPONSE IS INVALID.
 ==================================================
 OUTPUT FORMAT (MANDATORY)
 ==================================================
-RETURN RAW JSON ONLY:
+RETURN ONLY A COMPLETE HTML DOCUMENT.
 
-{
-  "message": "Short professional confirmation sentence",
-  "code": "<FULL VALID HTML DOCUMENT>"
-}
+RULES:
+✔ Start with <!DOCTYPE html>
+✔ Return full HTML only
+✔ No markdown
+✔ No JSON
+✔ No explanations
+✔ No code blocks
+✔ Include exactly one <style> tag
+✔ Include exactly one <script> tag
 
 ==================================================
-ABSOLUTE OUTPUT RULES
-==================================================
-✔ RETURN ONLY RAW JSON
-✔ DO NOT WRAP JSON INSIDE MARKDOWN CODE BLOCKS
-✔ NO MARKDOWN
-✔ NO EXPLANATIONS
-✔ NO EXTRA TEXT
-✔ NO CODE BLOCKS
-✔ VALID JSON ONLY
-✔ COMPLETE HTML DOCUMENT ONLY
 
-IF OUTPUT FORMAT BREAKS → RESPONSE IS INVALID.
 `;
 
 export const generateWebsite = async (req, res) => {
@@ -332,27 +325,34 @@ export const generateWebsite = async (req, res) => {
         .json({ message: "you have not enough credits to generate a website" });
     }
     const finalPrompt = masterPrompt.replace("USER_PROMPT", prompt);
-    let raw = "";
-    let parsed = null;
-    for (let i = 0; i < 2 && !parsed; i++) {
-      raw = await generateResponse(finalPrompt);
-      parsed = await extractJson(raw);
+    const raw = await generateResponse(finalPrompt);
 
-      if (!parsed) {
-        raw = await generateResponse(finalPrompt + "\n\nRETURN ONLY RAW JSON.");
-        parsed = await extractJson(raw);
-      }
+    let cleanCode = raw
+      .replace(/```html/g, "")
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    try {
+      const parsed = JSON.parse(cleanCode);
+
+      cleanCode = parsed.code || parsed.html || parsed.website || cleanCode;
+    } catch (error) {
+      // AI returned raw HTML directly
     }
 
-    if (!parsed.code) {
-      console.log("ai returned invalid response", raw);
-      return res.status(400).json({ message: "ai returned invalid response" });
+    if (!cleanCode.includes("<html")) {
+      console.log("invalid ai response", cleanCode);
+
+      return res.status(400).json({
+        message: "Invalid AI response",
+      });
     }
 
     const Website = await website.create({
       user: user._id,
       title: prompt.slice(0, 60),
-      latestCode: parsed.code,
+      latestCode: cleanCode,
       conversation: [
         {
           role: "user",
@@ -360,7 +360,7 @@ export const generateWebsite = async (req, res) => {
         },
         {
           role: "ai",
-          content: parsed.message,
+          content: "Website generated successfully",
         },
       ],
     });
@@ -539,60 +539,40 @@ Images must be responsive and never overflow.
 ==================================================
 OUTPUT FORMAT
 ==================================================
-RETURN RAW JSON ONLY:
 
-{
-  "message": "Short confirmation",
-  "code": "<UPDATED FULL HTML>"
-}
 
 ==================================================
-ABSOLUTE OUTPUT RULES
-==================================================
-✔ RETURN ONLY RAW JSON
-✔ DO NOT WRAP JSON INSIDE MARKDOWN CODE BLOCKS
-✔ NO MARKDOWN
-✔ NO EXPLANATIONS
-✔ NO EXTRA TEXT
-✔ VALID JSON ONLY
-✔ FULL HTML DOCUMENT ONLY
 
-IF OUTPUT FORMAT BREAKS → RESPONSE IS INVALID.
 `;
 
-    let raw = "";
-    let parsed = null;
-    for (let i = 0; i < 2 && !parsed; i++) {
-      raw = await generateResponse(updatePrompt);
-      parsed = await extractJson(raw);
+    const raw = await generateResponse(updatePrompt);
 
-      if (!parsed) {
-        raw = await generateResponse(
-          updatePrompt + "\n\nRETURN ONLY RAW JSON.",
-        );
-        parsed = await extractJson(raw);
-      }
+    const cleanCode = raw
+      .replace(/```html/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    if (!cleanCode.includes("<html") && !cleanCode.includes("<!DOCTYPE html")) {
+      console.log("invalid ai response", cleanCode);
+
+      return res.status(400).json({
+        message: "Invalid AI response",
+      });
     }
-
-    if (!parsed.code) {
-      console.log("ai returned invalid response", raw);
-      return res.status(400).json({ message: "ai returned invalid response" });
-    }
-
     Website.conversation.push(
       { role: "user", content: prompt },
-      { role: "ai", content: parsed.message },
+      { role: "ai", content: "Website updated successfully" },
     );
 
-    Website.latestCode = parsed.code;
+    Website.latestCode = cleanCode;
     await Website.save();
 
     user.credits = user.credits - 25;
     await user.save();
 
     return res.status(200).json({
-      message: parsed.message,
-      code: parsed.code,
+      mmessage: "Website updated successfully",
+      code: cleanCode,
       remainingCredits: user.credits,
     });
   } catch (error) {
@@ -615,6 +595,7 @@ export const deploy = async (req, res) => {
       _id: req.params.id,
       user: req.user._id,
     });
+
     if (!Website) {
       return res.status(400).json({ message: "website not found" });
     }
@@ -622,36 +603,48 @@ export const deploy = async (req, res) => {
     if (!Website.slug) {
       Website.slug =
         Website.title
-          .toLocaleLowerCase()
+          .toLowerCase()
           .replace(/[^a-z0-9]/g, "")
           .slice(0, 60) + Website._id.toString().slice(-5);
     }
+
     Website.deployed = true;
-    Website.deployeUrl = `${process.env.FRONTEND_URL}/site/${Website.slug}`;
+    Website.deployUrl = `${process.env.FRONTEND_URL}/site/${Website.slug}`;
+
     await Website.save();
 
     return res.status(200).json({
-      url: Website.deployeUrl,
+      url: Website.deployUrl,
+      slug: Website.slug,
     });
   } catch (error) {
-    return res.status(500).json({ message: `deploy website error ${error}` });
+    return res.status(500).json({
+      message: `deploy website error ${error}`,
+    });
   }
 };
 
-
-export const getBySlug = async (req,res) => {
+export const getBySlug = async (req, res) => {
   try {
-     const Website = await website.findOne({
+    const Website = await website.findOne({
       slug: req.params.slug,
-      user: req.user._id,
+      deployed: true,
     });
+
     if (!Website) {
-      return res.status(400).json({ message: "website not found" });
+      return res.status(404).json({
+        message: "website not found",
+        slug: req.params.slug,
+      });
     }
-    return res.status(200).json(Website)
+
+    return res.status(200).json({
+      title: Website.title,
+      latestCode: Website.latestCode,
+    });
   } catch (error) {
-    return res.status(500).json({ message: `get by slug website error ${error}` });
-    
+    return res.status(500).json({
+      message: `get by slug website error ${error}`,
+    });
   }
-  
-}
+};

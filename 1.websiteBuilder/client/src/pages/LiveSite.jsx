@@ -1,45 +1,61 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
+import { ArrowLeft } from "lucide-react";
 
 function LiveSite() {
-  const { id } = useParams();
-  const [html, setHtml] = useState("");
-  const [error, setError] = useState("");
+  const { slug } = useParams();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const [code, setCode] = useState("");
 
   useEffect(() => {
-    const handleGetWebsite = async () => {
+    const getWebsite = async () => {
       try {
-        const result = await axios.get(
-          `${serverUrl}/api/website/get-by-slug/${id}`,
-          { withCredentials: true },
-        );
-        setHtml(result.data.latestCode);
+        const result = await axios.get(`${serverUrl}/api/website/site/${slug}`);
+
+        console.log("LIVE SITE RESULT:", result.data);
+        console.log("LATEST CODE:", result.data.latestCode);
+        console.log("CODE LENGTH:", result.data.latestCode?.length);
+
+        setCode(result.data.latestCode);
       } catch (error) {
-        console.log(
-          "Get Website Error:",
-          error.response?.data || error.message,
-        );
-        setError("site not found ");
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
-    handleGetWebsite();
-  }, [id]);
-  if (error) {
+
+    getWebsite();
+  }, [slug]);
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-black text-white">
-        {error}
+        Loading website...
       </div>
     );
   }
   return (
-    <iframe
-      title="Live Site"
-      srcDoc={html}
-      className="w-screen h-screen border-none"
-      sandbox="allow-scripts allow-same-origin allow-forms"
-    />
+    <div className="h-screen w-screen bg-black">
+      <iframe
+        title="Live Site"
+        className="fixed inset-0 w-full h-full bg-white border-0"
+        srcDoc={code}
+      />
+
+      <button
+        onClick={() => navigate("/dashboard")}
+        className="fixed top-4 left-4 z-50 px-4 py-2 rounded-lg bg-black/70 text-white"
+      >
+        <ArrowLeft size={16} />
+      </button>
+
+      <div className="fixed bottom-4 left-4 z-50 bg-black text-white text-xs p-2 rounded">
+        Code Length: {code?.length || 0}
+      </div>
+    </div>
   );
 }
 

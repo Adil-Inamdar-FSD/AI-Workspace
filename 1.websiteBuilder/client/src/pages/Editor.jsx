@@ -55,18 +55,31 @@ function WebsiteEditor() {
     } catch (error) {
       setUpdateLoading(false);
       console.log("Update Error:", error.response?.data || error.message);
+
+      setMessage((m) => [
+        ...m,
+        {
+          role: "ai",
+          content: error.response?.data?.message || "Failed to update website",
+        },
+      ]);
     }
   };
-
   const handleDeploy = async () => {
     try {
       const result = await axios.get(
         `${serverUrl}/api/website/deploy/${website._id}`,
-        {
-          withCredentials: true,
-        },
+        { withCredentials: true },
       );
-      window.open(`${result.data.url}`, "_blank");
+
+      console.log("DEPLOY RESULT:", result.data);
+
+      setWebsite((prev) => ({
+        ...prev,
+        deployed: true,
+        slug: result.data.slug,
+        deployUrl: result.data.url,
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -106,10 +119,10 @@ function WebsiteEditor() {
 
   useEffect(() => {
     if (!iframeRef.current || !code) return;
-    const blob = new Blob([code], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    iframeRef.current.src = url;
-    return () => URL.revokeObjectURL(url);
+
+    requestAnimationFrame(() => {
+      iframeRef.current.srcdoc = code;
+    });
   }, [code]);
 
   if (error) {
@@ -186,7 +199,28 @@ function WebsiteEditor() {
           <span className="text-xs text-zinc-400">Live Preview</span>
           <div className="flex gap-2">
             {website.deployed ? (
-              ""
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate(`/editor/${website._id}`)}
+                  className="px-4 py-1.5 rounded-lg bg-white/10 text-sm font-semibold"
+                >
+                  Editor
+                </button>
+
+                <button
+                  onClick={() => {
+                    const liveUrl =
+                      website.deployUrl ||
+                      website.deployeUrl ||
+                      `${window.location.origin}/site/${website.slug}`;
+
+                    console.log("OPEN SITE URL:", liveUrl);
+                    window.open(liveUrl, "_blank");
+                  }}
+                >
+                  Open Site
+                </button>
+              </div>
             ) : (
               <button
                 onClick={handleDeploy}
@@ -293,7 +327,14 @@ function WebsiteEditor() {
               theme="vs-dark"
               value={code}
               language="html"
-              onChange={(v) => setCode(v)}
+              onChange={(v) => setCode(v || "")}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                wordWrap: "on",
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
+              }}
             />
           </motion.div>
         )}

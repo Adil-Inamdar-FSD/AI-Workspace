@@ -6,8 +6,9 @@ import { useSelector } from "react-redux";
 import Dashboard from "./pages/Dashboard";
 import Generate from "./pages/Generate";
 import WebsiteEditor from "./pages/Editor";
-import LiveSite from "./pages/LiveSite";
 import Pricing from "./pages/Pricing";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import LiveSite from "./pages/LiveSite";
 export const serverUrl = "http://localhost:8000";
 
 function App() {
@@ -18,11 +19,18 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={userData ? <Dashboard /> : <Home />} />
+        <Route
+          path="/dashboard"
+          element={userData ? <Dashboard /> : <Home />}
+        />
         <Route path="/generate" element={userData ? <Generate /> : <Home />} />
-        <Route path="/editor/:id" element={userData ? <WebsiteEditor /> : <Home />} />
-        <Route path="/site/:id" element={<LiveSite />} />
+        <Route
+          path="/editor/:id"
+          element={userData ? <WebsiteEditor /> : <Home />}
+        />
+        <Route path="/site/:slug" element={<LiveSite />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
       </Routes>
     </BrowserRouter>
   );

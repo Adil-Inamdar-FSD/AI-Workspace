@@ -20,13 +20,11 @@ function Dashboard() {
         withCredentials: true,
       });
       window.open(`${result.data.url}`, "_blank");
-      setWebsites((prev) =>
-        prev.map((w) =>
-          w._id === id
-            ? { ...w, deployed: true, decodeURI: result.data.url }
-            : w,
-        ),
-      );
+      setWebsite((prev) => ({
+        ...prev,
+        deployed: true,
+        deployUrl: result.data.url,
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -51,8 +49,8 @@ function Dashboard() {
   }, []);
 
   const handleShare = async (site) => {
-    const shareUrl = site.deployUrl;
-
+    const shareUrl =
+      site.deployUrl || `${window.location.origin}/preview/${site._id}`;
     if (!shareUrl) {
       alert("Please deploy website first");
       return;
@@ -153,7 +151,10 @@ function Dashboard() {
                     </p>
                     {!w.deployed ? (
                       <button
-                        onClick={() => handleDeploy(w._id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeploy(w._id);
+                        }}
                         className="mt-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 transition"
                       >
                         <Rocket size={18} />

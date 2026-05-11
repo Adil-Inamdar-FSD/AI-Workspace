@@ -115,7 +115,13 @@ function Home() {
                             {userData.email}
                           </p>
                         </div>
-                        <button className="md:hidden w-full px-4 py-3 flex items-center gap-2 text-sm border-b border-white/10 hover:lg-white/5">
+                        <button
+                          onClick={() => {
+                            setOpenProfile(false);
+                            navigate("/pricing");
+                          }}
+                          className="md:hidden w-full px-4 py-3 flex items-center gap-2 text-sm border-b border-white/10 hover:bg-white/5"
+                        >
                           <Coins size={14} className="text-yellow-400" />
                           <span className="text-zinc-300">Credits</span>
                           <span>{userData.credits}</span>
@@ -164,7 +170,9 @@ function Home() {
         </motion.p>
         <button
           className="mt-12 px-10 py-4 rounded-xl bg-white text-black font-semibold hover:scale-105 transition"
-          onClick={() => userData ? navigate("/dashboard") :setOpenLogin(true)}
+          onClick={() =>
+            userData ? navigate("/dashboard") : setOpenLogin(true)
+          }
         >
           {userData ? "Go to dashboard" : "Get Started"}
         </button>
@@ -198,7 +206,7 @@ function Home() {
               <motion.div
                 key={w._id}
                 whileHover={{ y: -6 }}
-                onClick={() => navigate(`/editor/${site._id}`)}
+                onClick={() => navigate(`/editor/${w._id}`)}
                 className="cursor-pointer rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
               >
                 <div className="h-40 bg-black">
