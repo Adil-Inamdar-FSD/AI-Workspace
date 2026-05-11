@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://ai-workspace-2-gfkn.onrender.com",
+    origin: "https://ai-workspace-3.onrender.com",
     credentials: true,
   }),
 );
