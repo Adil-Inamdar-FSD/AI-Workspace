@@ -9,6 +9,7 @@ import WebsiteEditor from "./pages/Editor";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
+import Pricing from "./pages/Pricing";
 export const serverUrl = "http://localhost:8000";
 
 function App() {
