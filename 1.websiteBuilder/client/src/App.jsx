@@ -10,7 +10,7 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
 
-export const serverUrl = "https://genweb-ai-wswy.onrender.com";
+export const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function App() {
   useGetCurrentUser();
