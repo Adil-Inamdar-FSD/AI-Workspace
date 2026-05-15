@@ -24,10 +24,8 @@ const port = process.env.PORT || 5000;
 // Allowed Frontend URLs
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ai-workspace-3.onrender.com",
-  "https://ai-workspace-2-gfkn.onrender.com",
+  "https://ai-workspace-qer8gd6q5-adilinamdar617-creators-projects.vercel.app",
 ];
-
 app.use(
   cors({
     origin: function (origin, callback) {
