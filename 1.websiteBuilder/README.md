@@ -133,7 +133,7 @@ STRIPE_SECRET_KEY=your_stripe_secret_key
 Create a `.env` file inside the `client` folder:
 
 ```env
-VITE_SERVER_URL=http://localhost:8000
+VITE_SERVER_URL=http://genweb-ai-wswy.onrender.com
 ```
 
 ---
