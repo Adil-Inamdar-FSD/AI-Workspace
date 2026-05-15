@@ -10,7 +10,8 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
 
-export const serverUrl = import.meta.env.VITE_SERVER_URL;
+export const serverUrl =
+  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 function App() {
   useGetCurrentUser();
