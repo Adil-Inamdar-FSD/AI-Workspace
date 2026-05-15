@@ -12,7 +12,7 @@ import {
   ArrowRight,
   ShieldCheck,
 } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 
 function PaymentSuccess() {
   const [searchParams] = useSearchParams();

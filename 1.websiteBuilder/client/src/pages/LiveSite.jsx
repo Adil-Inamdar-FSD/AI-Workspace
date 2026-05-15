@@ -9,7 +9,7 @@ import {
   LoaderCircle,
   Sparkles,
 } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 
 function LiveSite() {
   const { slug } = useParams();

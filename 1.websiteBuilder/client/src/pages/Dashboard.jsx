@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";

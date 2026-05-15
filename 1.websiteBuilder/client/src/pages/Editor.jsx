@@ -15,7 +15,7 @@ import {
   X,
   Check,
 } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import Editor from "@monaco-editor/react";
 
 function WebsiteEditor() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import LoginModel from "../components/LoginModel";
 import { useDispatch, useSelector } from "react-redux";
 import {

@@ -1,7 +1,7 @@
 import { ArrowLeft, Check, Coins, Sparkles, Zap, Crown } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
