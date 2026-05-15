@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import { useSelector } from "react-redux";
@@ -9,11 +9,8 @@ import WebsiteEditor from "./pages/Editor";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
-<<<<<<< HEAD
+
 export const serverUrl = "https://genweb-ai-wswy.onrender.com";
-=======
-export const serverUrl = "http://localhost:8000";
->>>>>>> 158ab36 (new commit)
 
 function App() {
   useGetCurrentUser();
@@ -23,15 +20,19 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+
         <Route
           path="/dashboard"
           element={userData ? <Dashboard /> : <Home />}
         />
+
         <Route path="/generate" element={userData ? <Generate /> : <Home />} />
+
         <Route
           path="/editor/:id"
           element={userData ? <WebsiteEditor /> : <Home />}
         />
+
         <Route path="/site/:slug" element={<LiveSite />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
