@@ -9,7 +9,11 @@ import WebsiteEditor from "./pages/Editor";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
+<<<<<<< HEAD
 export const serverUrl = "https://genweb-ai-wswy.onrender.com";
+=======
+export const serverUrl = "http://localhost:8000";
+>>>>>>> 158ab36 (new commit)
 
 function App() {
   useGetCurrentUser();
