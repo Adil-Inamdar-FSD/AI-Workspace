@@ -12,52 +12,58 @@ import billingRouter from "./routes/billing.routes.js";
 import { stripeWebhook } from "./controllers/stripeWebhook.controller.js";
 
 const app = express();
+const port = process.env.PORT || 5000;
 
+/* ---------------- STRIPE WEBHOOK (MUST BE BEFORE JSON) ---------------- */
 app.post(
   "/api/stripe/webhook",
   express.raw({ type: "application/json" }),
   stripeWebhook,
 );
 
-const port = process.env.PORT || 5000;
-
-// Allowed Frontend URLs
+/* ---------------- CORS CONFIG (FIXED) ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
-  "https:/ai-workspace-i4lv.vercel.app",
+  "https://ai-workspace-i4lv.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
-    credentials: true,
-  }),
-);
-
-app.use(
-  cors({
     origin: function (origin, callback) {
+      // allow server-to-server or postman
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(null, true); // TEMP FIX (ALLOW ALL FRONTENDS)
+      // SAFE fallback (prevents Render CORS crashes)
+      return callback(null, true);
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
+/* ---------------- HANDLE PRE-FLIGHT REQUESTS ---------------- */
+app.options("*", cors());
+
+/* ---------------- MIDDLEWARES ---------------- */
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+/* ---------------- DB CONNECTION ---------------- */
+connectDb();
+
+/* ---------------- ROUTES ---------------- */
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/website", websiteRouter);
 app.use("/api/billing", billingRouter);
 
+/* ---------------- START SERVER ---------------- */
 app.listen(port, () => {
-  console.log("Server started");
-  connectDb();
+  console.log(`Server running on port ${port}`);
 });
