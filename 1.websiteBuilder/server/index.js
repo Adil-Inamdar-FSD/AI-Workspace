@@ -22,12 +22,18 @@ app.post(
 const port = process.env.PORT || 5000;
 
 // Allowed Frontend URLs
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https:/ai-workspace-i4lv.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://ai-workspace-rho.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
+
 app.use(
   cors({
     origin: function (origin, callback) {
