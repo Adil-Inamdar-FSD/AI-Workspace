@@ -22,21 +22,22 @@ app.post(
 const port = process.env.PORT || 5000;
 
 // Allowed Frontend URLs
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://ai-workspace-qer8gd6q5-adilinamdar617-creators-projects.vercel.app",
-];
+app.use(
+  cors({
+    origin: "https://ai-workspace-rho.vercel.app",
+    credentials: true,
+  }),
+);
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (Postman/mobile apps)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+        return callback(null, true);
       }
+
+      return callback(null, true); // TEMP FIX (ALLOW ALL FRONTENDS)
     },
     credentials: true,
   }),
