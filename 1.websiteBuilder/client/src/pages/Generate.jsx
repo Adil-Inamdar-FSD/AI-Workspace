@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
-import { serverUrl } from "../App";
+import { serverUrl } from "../config/config";
 
 const PHASES = [
   "Analyzing your idea...",
