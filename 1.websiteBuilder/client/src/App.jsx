@@ -10,8 +10,7 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
 
-export const serverUrl =
-  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+export const serverUrl ="https://genweb-ai-server.onrender.com";
 
 function App() {
   useGetCurrentUser();
