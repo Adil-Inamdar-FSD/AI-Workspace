@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { serverUrl } from "../App";
+import { serverUrl } from "../config/config";
 import {
   ArrowLeft,
   Code2,
