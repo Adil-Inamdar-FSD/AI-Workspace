@@ -13,6 +13,9 @@ import { stripeWebhook } from "./controllers/stripeWebhook.controller.js";
 
 const app = express();
 
+// IMPORTANT
+app.set("trust proxy", 1);
+
 app.post(
   "/api/stripe/webhook",
   express.raw({ type: "application/json" }),
@@ -21,10 +24,13 @@ app.post(
 
 const port = process.env.PORT || 5000;
 
-// CORRECT CORS
+// FIXED CORS
 app.use(
   cors({
-    origin: "https://genweb-ai-client.onrender.com",
+    origin: [
+      "http://localhost:5173",
+      "https://genweb-ai-client.onrender.com",
+    ],
     credentials: true,
   }),
 );
@@ -40,6 +46,7 @@ app.use("/api/billing", billingRouter);
 app.get("/", (req, res) => {
   res.send("Backend running");
 });
+
 app.listen(port, () => {
   console.log("Server started");
   connectDb();
