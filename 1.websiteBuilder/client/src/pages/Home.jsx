@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import axios from "axios";
-import { serverUrl } from "../App";
+import { serverUrl } from "../config/config";
 import { setUserData } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
