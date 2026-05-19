@@ -20,6 +20,7 @@ const isAuth = async (req, res, next) => {
         message: "User not found",
       });
     }
+    console.log("Cookies:", req.cookies);
 
     req.user = user;
 
