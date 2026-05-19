@@ -21,14 +21,14 @@ function LoginModel({ open, onClose }) {
 
       // 2. Send user to backend
       const { data } = await axios.post(
-        `${serverUrl}/api/auth/google`,
-        {
-          name: user.displayName,
-          email: user.email,
-          avatar: user.photoURL,
-        },
-        { withCredentials: true }
-      );
+  `${serverUrl}/api/auth/google`,
+  {
+    name: result.user.displayName,
+    email: result.user.email,
+    avatar: result.user.photoURL,
+  },
+  { withCredentials: true }
+);
 
       // 3. Save user in Redux
       dispatch(setUserData(data));
