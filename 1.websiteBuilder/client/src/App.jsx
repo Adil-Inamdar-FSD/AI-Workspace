@@ -10,7 +10,7 @@ import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import LiveSite from "./pages/LiveSite";
 
-export const serverUrl ="https://genweb-ai-server.onrender.com";
+export const serverUrl = "https://genweb-ai-server.onrender.com";
 
 function App() {
   useGetCurrentUser();
