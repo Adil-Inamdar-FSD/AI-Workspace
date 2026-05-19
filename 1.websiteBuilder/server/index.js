@@ -24,7 +24,7 @@ const port = process.env.PORT || 5000;
 // CORRECT CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://genweb-ai-client.onrender.com",
     credentials: true,
   }),
 );
